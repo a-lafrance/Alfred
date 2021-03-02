@@ -1,0 +1,38 @@
+each command has a grammar
+
+All possible input sentences (currently):
+
+"[Verb] `<command>`" where Verb is one of several pre-defined options, such as "Run", "Execute", "Do", etc
+"[VP] what's in <dir>" where VP is "Show me", "List", "Tell me", etc
+"[VP] the contents of <dir>" where VP is "Show me", "List", "Tell me", etc
+"What's inside <dir>?"
+"[Verb] <path> to <new path>" where Verb is "Move" or "Rename"
+"Place <path> in <dir>"
+"Move everything in <dir> to <new dir>" for glob moves
+"[Verb] <path> to <new path>" where Verb is "Copy" or "Duplicate"
+"[Verb] everything in <dir> to <new dir>" for glob copies, where Verb is "Copy" or "Duplicate"
+"[Verb] [everything in <dir> | <path>] [recursively?]" where Verb is "Delete", "Remove", "Get rid of", etc;
+  adding "recursively" at the beginning or end only works for directories, and produces an error otherwise;
+  "everything in <dir>" works for glob removals
+
+Will need some kind of "catchall" thing using backticks
+
+Grammar:
+
+S -> VP | NP VP
+VP -> Verb
+   |  VP NP
+NP -> Noun
+   |  Pronoun
+   |  Command
+   |  Article NP
+   |  NP Preposition
+
+Command -> `.+`
+
+Preposition -> to | inside | in
+Article -> the
+Noun -> contents | everything
+Pronoun -> me
+Adverb -> recursively
+Verb -> run | execute | do | show | list | tell | move | rename | place | copy | duplicate | delete | remove
