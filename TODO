@@ -18,21 +18,27 @@ All possible input sentences (currently):
 Will need some kind of "catchall" thing using backticks
 
 Grammar:
+NOTE: grammar heavily overgenerates -- fine for initial version, needs to be ironed out later
 
-S -> VP | NP VP
+S -> Imperative S | NP VP | S Conj S
 VP -> Verb
    |  VP NP
+   |  Adverb VP
+   |  VP Adverb
+   |  VP PP
 NP -> Noun
    |  Pronoun
    |  Command
-   |  Article NP
-   |  NP Preposition
+   |  Article Noun
+   |  NP PP
+PP -> Preposition NP
+Imperative -> Verb NP | Verb
 
 Command -> `.+`
 
 Preposition -> to | inside | in
 Article -> the
-Noun -> contents | everything
-Pronoun -> me
+Noun -> contents | everything | what
+Pronoun -> me | what
 Adverb -> recursively
-Verb -> run | execute | do | show | list | tell | move | rename | place | copy | duplicate | delete | remove
+Verb -> run | execute | do | show | list | tell | move | rename | place | copy | duplicate | delete | remove | is
