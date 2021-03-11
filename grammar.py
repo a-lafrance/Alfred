@@ -77,9 +77,16 @@ class Grammar:
             for x, y, z, p in self.syntax_rules():
                 p_yz = probabilities[y, i, j] * probabilities[z, j + 1, k] * p
 
+                # if i == 0 and k == l - 1:
+                #     print(x, y, z, p, trees)
+
                 if p_yz > probabilities[x, i, k]:
                     probabilities[x, i, k] = p_yz
                     trees[x, i, k] = ParseTreeNode('', trees[y, i, j], trees[z, j + 1, k])
+
+        # print(trees)
+        # print()
+        # print()
 
         for data, tree in trees.items():
             x, i, j = data
@@ -100,10 +107,13 @@ class Grammar:
 
 if __name__ == '__main__':
     syntax = [
-        SyntaxRule('S', 'Imperative', 'NP', 0.25),
-        SyntaxRule('S', 'NP', 'VP', 0.25),
-        SyntaxRule('S', 'Noun', 'VP', 0.25),
-        SyntaxRule('S', 'Pronoun', 'VP', 0.25),
+        SyntaxRule('S', 'Imperative', 'NP', 1/7),
+        SyntaxRule('S', 'NP', 'VP', 1/7),
+        SyntaxRule('S', 'NP', 'Verb', 1/7),
+        SyntaxRule('S', 'Noun', 'Verb', 1/7),
+        SyntaxRule('S', 'Noun', 'VP', 1/7),
+        SyntaxRule('S', 'Pronoun', 'VP', 1/7),
+        SyntaxRule('S', 'Pronoun', 'Verb', 1/7),
 
         SyntaxRule('VP', 'VP', 'NP', 1/7),
         SyntaxRule('VP', 'Verb', 'NP', 1/7),

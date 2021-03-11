@@ -1,44 +1,36 @@
-each command has a grammar
+Input:
+- one main grammar for the whole chatbot
+- each command contributes to that grammar's syntax and lexicon however it needs to
+- use cyk parse to parse input into parse tree
+  - if parse fails, return error
 
-All possible input sentences (currently):
+Semantics:
+- each command is given a chance to interpret the parse tree
+  - if successful, that command is executed
+  - if all commands fail, return error
+- each command has some parameters that it has to fulfill -- extract them from parse tree and exec the command
+  - need to find a way to parse non-alphabetical grammar stuff, like commas (for conjunction) and regex (for paths/directories)
+- python probably has some way to execute system commands but i forget what it is
 
-"[Verb] `<command>`" where Verb is one of several pre-defined options, such as "Run", "Execute", "Do", etc
-"[VP] what's in <dir>" where VP is "Show me", "List", "Tell me", etc
-"[VP] the contents of <dir>" where VP is "Show me", "List", "Tell me", etc
-"What's inside <dir>?"
-"[Verb] <path> to <new path>" where Verb is "Move" or "Rename"
-"Place <path> in <dir>"
-"Move everything in <dir> to <new dir>" for glob moves
-"[Verb] <path> to <new path>" where Verb is "Copy" or "Duplicate"
-"[Verb] everything in <dir> to <new dir>" for glob copies, where Verb is "Copy" or "Duplicate"
-"[Verb] [everything in <dir> | <path>] [recursively?]" where Verb is "Delete", "Remove", "Get rid of", etc;
-  adding "recursively" at the beginning or end only works for directories, and produces an error otherwise;
-  "everything in <dir>" works for glob removals
+Output:
+- each command has its own output grammar (distinct from input grammar)
+- for error output, just return a generic error message (sample from common error output grammar)
+- for command output, sample from that command's output grammar
 
-Will need some kind of "catchall" thing using backticks
+step 1: fix cyk parse
+- literally make the grammar functional and the cyk parse implementation foolproof
 
-Grammar:
-NOTE: grammar heavily overgenerates -- fine for initial version, needs to be ironed out later
+step 2: impl command input
+- make command classes and make them able to interpret a parse tree
 
-S -> Imperative S | NP VP | S Conj S
-VP -> Verb
-   |  VP NP
-   |  Adverb VP
-   |  VP Adverb
-   |  VP PP
-NP -> Noun
-   |  Pronoun
-   |  Command
-   |  Article Noun
-   |  NP PP
-PP -> Preposition NP
-Imperative -> Verb NP | Verb
+step 3: semantics
+- implement command execution
 
-Command -> `.+`
+step 4: output
+- figure out how to sample from a grammar (or just hard code stuff idk)
+- print to user
 
-Preposition -> to | inside | in
-Article -> the
-Noun -> contents | everything | what
-Pronoun -> me | what
-Adverb -> recursively
-Verb -> run | execute | do | show | list | tell | move | rename | place | copy | duplicate | delete | remove | is
+step 5: refine
+- add extras
+- tighten up the interface
+- etc
