@@ -15,8 +15,9 @@ if __name__ == '__main__':
         SyntaxRule('VP', 'Adverb', 'Verb', 0.2),
         SyntaxRule('VP', 'Adverb', 'VP', 0.2),
 
-        SyntaxRule('NP', 'NP', 'PP', 0.5),
-        SyntaxRule('NP', 'Article', 'Noun', 0.5),
+        SyntaxRule('NP', 'NP', 'PP', 1/3),
+        SyntaxRule('NP', 'Noun', 'PP', 1/3),
+        SyntaxRule('NP', 'Article', 'Noun', 1/3),
 
         SyntaxRule('PP', 'Preposition', 'NP', 1/3),
         SyntaxRule('PP', 'Preposition', 'Noun', 1/3),
@@ -24,10 +25,11 @@ if __name__ == '__main__':
     ]
 
     lexicon = [
-        LexicalRule('Preposition', 'to', 0.25),
-        LexicalRule('Preposition', 'inside', 0.25),
-        LexicalRule('Preposition', 'in', 0.25),
-        LexicalRule('Preposition', 'from', 0.25),
+        LexicalRule('Preposition', 'to', 0.2),
+        LexicalRule('Preposition', 'inside', 0.2),
+        LexicalRule('Preposition', 'in', 0.2),
+        LexicalRule('Preposition', 'from', 0.2),
+        LexicalRule('Preposition', 'of', 0.2),
 
         LexicalRule('Article', 'the', 1),
 

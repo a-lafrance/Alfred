@@ -61,6 +61,7 @@ class Grammar:
 
         # TODO: contraction expansion
         # TODO: don't auto-lowercase commands
+        # TODO: tokenization
         tokens = sentence.lower().split()
         l = len(tokens)
 
