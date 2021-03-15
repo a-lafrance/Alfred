@@ -2,61 +2,61 @@ from grammar import SyntaxRule, LexicalRule, Grammar
 
 if __name__ == '__main__':
     syntax = [
-        SyntaxRule('S', 'Imperative', 'NP', 0.25),
-        SyntaxRule('S', 'NP', 'VP', 0.25),
-        SyntaxRule('S', 'Noun', 'VP', 0.25),
-        SyntaxRule('S', 'Pronoun', 'VP', 0.25),
+        SyntaxRule('S', 'VP', 'NP', 1/6),
+        SyntaxRule('S', 'Verb', 'NP', 1/6),
+        SyntaxRule('S', 'Verb', 'Noun', 1/6),
+        SyntaxRule('S', 'NP', 'VP', 1/6),
+        SyntaxRule('S', 'Noun', 'VP', 1/6),
+        SyntaxRule('S', 'Pronoun', 'VP', 1/6),
 
-        SyntaxRule('VP', 'VP', 'NP', 1/7),
-        SyntaxRule('VP', 'Verb', 'NP', 1/7),
-        SyntaxRule('VP', 'Verb', 'Noun', 1/7),
-        SyntaxRule('VP', 'Verb', 'Pronoun', 1/7),
-        SyntaxRule('VP', 'VP', 'Pronoun', 1/7),
-        SyntaxRule('VP', 'VP', 'Adverb', 1/7),
-        SyntaxRule('VP', 'VP', 'PP', 1/7),
+        SyntaxRule('VP', 'Verb', 'Pronoun', 0.2),
+        SyntaxRule('VP', 'Verb', 'PP', 0.2),
+        SyntaxRule('VP', 'VP', 'PP', 0.2),
+        SyntaxRule('VP', 'Adverb', 'Verb', 0.2),
+        SyntaxRule('VP', 'Adverb', 'VP', 0.2),
 
-        SyntaxRule('NP', 'Article', 'Noun', 0.5),
         SyntaxRule('NP', 'NP', 'PP', 0.5),
+        SyntaxRule('NP', 'Article', 'Noun', 0.5),
 
-        SyntaxRule('PP', 'Preposition', 'NP', 0.333),
-        SyntaxRule('PP', 'Preposition', 'Noun', 0.333),
-        SyntaxRule('PP', 'Preposition', 'Pronoun', 0.333),
-
-        SyntaxRule('Imperative', 'Verb', 'NP', 1),
+        SyntaxRule('PP', 'Preposition', 'NP', 1/3),
+        SyntaxRule('PP', 'Preposition', 'Noun', 1/3),
+        SyntaxRule('PP', 'Preposition', 'Pronoun', 1/3),
     ]
 
     lexicon = [
-        LexicalRule('Preposition', 'to', 0.333),
-        LexicalRule('Preposition', 'inside', 0.333),
-        LexicalRule('Preposition', 'in', 0.333),
+        LexicalRule('Preposition', 'to', 0.25),
+        LexicalRule('Preposition', 'inside', 0.25),
+        LexicalRule('Preposition', 'in', 0.25),
+        LexicalRule('Preposition', 'from', 0.25),
 
         LexicalRule('Article', 'the', 1),
 
-        LexicalRule('Noun', 'contents', 0.333),
-        LexicalRule('Noun', 'everything', 0.333),
-        LexicalRule('Noun', 'dir', 0.333), # placeholder for testing without semantics
+        LexicalRule('Noun', 'contents', 1/3),
+        LexicalRule('Noun', 'everything', 1/3),
+        LexicalRule('Noun', 'path', 1/3), # placeholder for testing without semantics
 
-        LexicalRule('Pronoun', 'me', 0.333),
-        LexicalRule('Pronoun', 'what', 0.333),
-        LexicalRule('Pronoun', 'i', 0.333),
+        LexicalRule('Pronoun', 'me', 0.5),
+        LexicalRule('Pronoun', 'what', 0.5),
 
         LexicalRule('Adverb', 'recursively', 1),
 
-        LexicalRule('Verb', 'run', 1/15),
-        LexicalRule('Verb', 'execute', 1/15),
-        LexicalRule('Verb', 'do', 1/15),
-        LexicalRule('Verb', 'show', 1/15),
-        LexicalRule('Verb', 'list', 1/15),
-        LexicalRule('Verb', 'tell', 1/15),
-        LexicalRule('Verb', 'move', 1/15),
-        LexicalRule('Verb', 'rename', 1/15),
-        LexicalRule('Verb', 'place', 1/15),
-        LexicalRule('Verb', 'copy', 1/15),
-        LexicalRule('Verb', 'duplicate', 1/15),
-        LexicalRule('Verb', 'delete', 1/15),
-        LexicalRule('Verb', 'remove', 1/15),
-        LexicalRule('Verb', 'is', 1/15),
-        LexicalRule('Verb', 'put', 1/15),
+        LexicalRule('Verb', 'run', 1/17),
+        LexicalRule('Verb', 'execute', 1/17),
+        LexicalRule('Verb', 'do', 1/17),
+        LexicalRule('Verb', 'show', 1/17),
+        LexicalRule('Verb', 'list', 1/17),
+        LexicalRule('Verb', 'tell', 1/17),
+        LexicalRule('Verb', 'move', 1/17),
+        LexicalRule('Verb', 'rename', 1/17),
+        LexicalRule('Verb', 'place', 1/17),
+        LexicalRule('Verb', 'copy', 1/17),
+        LexicalRule('Verb', 'duplicate', 1/17),
+        LexicalRule('Verb', 'delete', 1/17),
+        LexicalRule('Verb', 'remove', 1/17),
+        LexicalRule('Verb', 'is', 1/17),
+        LexicalRule('Verb', 'put', 1/17),
+        LexicalRule('Verb', 'display', 1/17),
+        LexicalRule('Verb', 'find', 1/17),
     ]
 
     grammar = Grammar(syntax, lexicon)
@@ -75,3 +75,46 @@ if __name__ == '__main__':
             print('no parse tree found')
 
     print('done')
+
+
+
+
+
+
+
+
+# GRAMMAR DESIGN:
+
+# --- Syntax ---
+# S -> VP NP
+#    | Verb NP
+#    | Verb Noun
+#    | NP VP
+#    | Noun VP
+#    | Pronoun VP
+#
+# VP -> Verb Pronoun
+#     | Verb PP
+#     | VP PP
+#     | Adverb Verb
+#     | Adverb VP
+#
+# NP -> NP PP
+#     | Article Noun
+#
+# PP -> Preposition NP
+#     | Preposition Noun
+#     | Preposition Pronoun
+
+
+# --- Lexicon ---
+# Noun -> contents | everything | path
+# Verb -> run | do | execute
+#       | show | list | tell | display | find
+#       | put | place | move | rename
+#       | copy | duplicate
+#       | delete | remove
+# Pronoun -> me | what
+# Adverb -> recursively
+# Article -> the
+# Preposition -> inside | in | to | from

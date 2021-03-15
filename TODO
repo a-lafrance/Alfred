@@ -19,6 +19,7 @@ Output:
 
 step 1: fix cyk parse
 - literally make the grammar functional and the cyk parse implementation foolproof
+- how to parse things that aren't words (like commas and commands)
 
 step 2: impl command input
 - make command classes and make them able to interpret a parse tree
