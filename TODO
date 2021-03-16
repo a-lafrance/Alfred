@@ -26,12 +26,13 @@ step 1: fix cyk parse
   - step 2: parsing tokens not words
     - status: done
   - step 3: parsing conjunctions
+    - status: done
 
 step 2: impl command input
 - make command classes and make them able to interpret a parse tree
   - keep a running "remaining lexicon", slim it down at every node in the tree until you can fill out the command
   - commands:
-    - ListCommand
+    - ListCommand - DONE
     - MoveCommand
     - CopyCommand
     - RemoveCommand
@@ -44,7 +45,7 @@ step 2: impl command input
       - ex2: "list everything in `dir`, copy everything in `dir2` to `dir`, then do it again" OR "do that again"
 
 step 3: semantics
-- implement command execution
+- implement command execution (see `subprocess` module)
 
 step 4: output
 - figure out how to sample from a grammar (or just hard code stuff idk)
@@ -54,3 +55,10 @@ step 5: refine
 - add extras
 - tighten up the interface
 - etc
+
+
+KNOWN ISSUES:
+- double conjunction doesn't work (like comma + conjunction word)
+- there are literally 0 unit tests
+- backticks in command input aren't handled
+- commands could each contribute their own lexicons (to make command input less abhorrent)

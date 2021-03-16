@@ -17,10 +17,15 @@ class WordToken(Token):
     def __eq__(self, tok: 'any') -> bool:
         if type(tok) == WordToken:
             return self.word == tok.word
+        elif type(tok) == str:
+            return self.word == tok
         elif isinstance(tok, Token):
             return False
         else:
             return NotImplemented
+
+    def __hash__(self):
+        return hash(self.word)
 
 class CommandInputToken(Token):
     def __init__(self, content: str):
@@ -38,6 +43,9 @@ class CommandInputToken(Token):
         else:
             return NotImplemented
 
+    def __hash__(self):
+        return hash('cmd')
+
     def placeholder() -> 'CommandInputToken':
         return CommandInputToken(None)
 
@@ -52,6 +60,9 @@ class ConjunctorToken(Token):
             return type(tok) == ConjunctorToken
         else:
             return NotImplemented
+
+    def __hash__(self):
+        return hash(',')
 
 def tokenize(sentence: str) -> 'list of tokens':
     tokens = []
