@@ -176,7 +176,6 @@ class CopyCommand(Command):
         pass
 
     def _read_parse_tree(self, node: ParseTreeNode, lexicon: {str : set}) -> bool:
-        # print(node.cat, node.data)
         if node.data == None:
             if node.cat == 'S':
                 if node.left != None and node.right != None:
@@ -212,7 +211,111 @@ class CopyCommand(Command):
             return node.data in lexicon[node.cat]
 
 class RemoveCommand(Command):
-    pass
+    def __init__(self, tree: ParseTreeNode):
+        # defaults before reading parse
+        self.path = None
+        self.is_recursive = False
+
+        self._read_parse_tree(tree, {})
+
+    def __str__(self) -> str:
+        recursive = '-rf ' if self.is_recursive else ''
+
+        return f'`rm {recursive}{self.path.content}`' if self.path != None else 'invalid command'
+
+    def exec(self):
+        pass
+
+    def _read_parse_tree(self, node: ParseTreeNode, lexicon: {str : set}) -> bool:
+        if node.data == None:
+            if node.cat == 'S':
+                if node.left != None and node.right != None:
+                    lexicon = {
+                        'Verb' : {'delete', 'remove'} # purge, trash, scrap,
+                    }
+
+                    if node.left.cat == 'VP':
+                        lexicon['Adverb'] = {'recursively'}
+                    elif node.left.cat != 'Verb':
+                        return False
+
+                    if not self._read_parse_tree(node.left, lexicon):
+                        return False
+
+                    lexicon = {
+                        'Noun' : {CommandInputToken.placeholder()}
+                    }
+
+                    if node.right.cat == 'NP':
+                        lexicon['Noun'].add('everything')
+                        lexicon['Preposition'] = {'in', 'inside'}
+                    elif node.right.cat != 'Noun':
+                        return False
+
+                    return self._read_parse_tree(node.right, lexicon)
+            elif node.cat == 'NP':
+                if node.left != None and node.right != None:
+                    if node.left.cat == 'Noun' and node.right.cat == 'PP':
+                        lexicon['Noun'] = {'everything'}
+
+                        if not self._read_parse_tree(node.left, lexicon):
+                            return False
+
+                        lexicon['Noun'] = {CommandInputToken.placeholder()}
+
+                        return self._read_parse_tree(node.right, lexicon)
+            elif node.cat == 'PP':
+                if node.left != None and node.right != None:
+                    if node.left.cat == 'Preposition' and node.right.cat == 'Noun':
+                        return self._read_parse_tree(node.left, lexicon) and self._read_parse_tree(node.right, lexicon)
+            elif node.cat == 'VP':
+                if node.left != None and node.right != None:
+                    if node.left.cat == 'Adverb' and node.right.cat == 'Verb':
+                        return self._read_parse_tree(node.left, lexicon) and self._read_parse_tree(node.right, lexicon)
+
+            return False
+        else:
+            if node.cat == 'Noun':
+                if type(node.data) == CommandInputToken:
+                    self.path = node.data
+                elif node.data == 'everything':
+                    self.is_recursive = True
+            elif node.cat == 'Adverb' and node.data == 'recursively':
+                self.is_recursive = True
+
+            return node.data in lexicon[node.cat]
+
+class RawCommand(Command):
+    def __init__(self, tree: ParseTreeNode):
+        self.cmd = None
+        self._read_parse_tree(tree, {})
+
+    def __str__(self) -> str:
+        return repr(self.cmd) if self.cmd != None else 'invalid command'
+
+    def exec(self):
+        pass
+
+    def _read_parse_tree(self, node: ParseTreeNode, lexicon: {str : set}) -> bool:
+        if node.data == None:
+            if node.left != None and node.right != None:
+                if node.cat == 'S':
+                    if node.left.cat == 'Verb' and node.right.cat == 'Noun':
+                        lexicon = {
+                            'Verb' : {'run', 'do', 'execute'},
+                            'Noun' : {CommandInputToken.placeholder()},
+                        }
+
+                        return self._read_parse_tree(node.left, lexicon) and self._read_parse_tree(node.right, lexicon)
+
+            return False
+        else:
+            if node.cat == 'Noun':
+                if type(node.data) == CommandInputToken:
+                    self.cmd = node.data
+
+            return node.data in lexicon[node.cat]
+
 
 class CommandGroup(Command):
     pass
@@ -221,9 +324,9 @@ class CommandGroup(Command):
 if __name__ == '__main__':
     from main import grammar
 
-    sentence = 'copy `src` to `dest`'
+    sentence = 'execute `python main.py`'
     tree = grammar.parse(sentence)
-    cmd = CopyCommand(tree)
+    cmd = RawCommand(tree)
     print(sentence, '->', cmd)
 
     # while True:

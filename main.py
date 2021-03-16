@@ -2,13 +2,14 @@ from grammar import SyntaxRule, LexicalRule, Grammar
 from tok import WordToken, CommandInputToken, ConjunctorToken
 
 syntax = [
-    SyntaxRule('S', 'VP', 'NP', 1/7),
-    SyntaxRule('S', 'Verb', 'NP', 1/7),
-    SyntaxRule('S', 'Verb', 'Noun', 1/7),
-    SyntaxRule('S', 'NP', 'VP', 1/7),
-    SyntaxRule('S', 'Noun', 'VP', 1/7),
-    SyntaxRule('S', 'Pronoun', 'VP', 1/7),
-    SyntaxRule('S', 'S', 'ConjClause', 1/7),
+    SyntaxRule('S', 'VP', 'NP', 0.125),
+    SyntaxRule('S', 'VP', 'Noun', 0.125),
+    SyntaxRule('S', 'Verb', 'NP', 0.125),
+    SyntaxRule('S', 'Verb', 'Noun', 0.125),
+    SyntaxRule('S', 'NP', 'VP', 0.125),
+    SyntaxRule('S', 'Noun', 'VP', 0.125),
+    SyntaxRule('S', 'Pronoun', 'VP', 0.125),
+    SyntaxRule('S', 'S', 'ConjClause', 0.125),
 
     SyntaxRule('ConjClause', 'Conj', 'S', 1),
 
