@@ -3,12 +3,15 @@ from tok import WordToken, CommandInputToken, ConjunctorToken
 
 if __name__ == '__main__':
     syntax = [
-        SyntaxRule('S', 'VP', 'NP', 1/6),
-        SyntaxRule('S', 'Verb', 'NP', 1/6),
-        SyntaxRule('S', 'Verb', 'Noun', 1/6),
-        SyntaxRule('S', 'NP', 'VP', 1/6),
-        SyntaxRule('S', 'Noun', 'VP', 1/6),
-        SyntaxRule('S', 'Pronoun', 'VP', 1/6),
+        SyntaxRule('S', 'VP', 'NP', 1/7),
+        SyntaxRule('S', 'Verb', 'NP', 1/7),
+        SyntaxRule('S', 'Verb', 'Noun', 1/7),
+        SyntaxRule('S', 'NP', 'VP', 1/7),
+        SyntaxRule('S', 'Noun', 'VP', 1/7),
+        SyntaxRule('S', 'Pronoun', 'VP', 1/7),
+        SyntaxRule('S', 'S', 'ConjClause', 1/7),
+
+        SyntaxRule('ConjClause', 'Conj', 'S', 1),
 
         SyntaxRule('VP', 'Verb', 'Pronoun', 0.2),
         SyntaxRule('VP', 'Verb', 'PP', 0.2),
@@ -60,6 +63,10 @@ if __name__ == '__main__':
         LexicalRule('Verb', WordToken('put'), 1/17),
         LexicalRule('Verb', WordToken('display'), 1/17),
         LexicalRule('Verb', WordToken('find'), 1/17),
+
+        LexicalRule('Conj', WordToken('and'), 1/3),
+        LexicalRule('Conj', WordToken('then'), 1/3),
+        LexicalRule('Conj', ConjunctorToken(), 1/3),
     ]
 
     grammar = Grammar(syntax, lexicon)

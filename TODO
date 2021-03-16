@@ -24,7 +24,8 @@ step 1: fix cyk parse
   - step 1: tokenization
     - status: done
   - step 2: parsing tokens not words
-    - status: in progress
+    - status: done
+  - step 3: parsing conjunctions
 
 step 2: impl command input
 - make command classes and make them able to interpret a parse tree
