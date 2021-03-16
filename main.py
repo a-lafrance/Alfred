@@ -1,5 +1,6 @@
 from grammar import SyntaxRule, LexicalRule, Grammar
 from tok import WordToken, CommandInputToken, ConjunctorToken
+from commands import Command
 
 syntax = [
     SyntaxRule('S', 'VP', 'NP', 0.125),
@@ -82,7 +83,8 @@ if __name__ == '__main__':
         tree = grammar.parse(sentence)
 
         if tree != None:
-            print(tree.traverse())
+            cmd = Command.from_parse_tree(tree)
+            print(cmd.exec().stdout)
         else:
             print('no parse tree found')
 

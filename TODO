@@ -35,8 +35,9 @@ step 2: impl command input
     - ListCommand - DONE
     - MoveCommand - DONE
     - CopyCommand - DONE
-    - RemoveCommand
-    - CommandGroup
+    - RemoveCommand - DONE
+    - RawCommand - DONE
+    - CommandGroup - DONE
   - bot also needs to remember context:
     - the word "there" = last path mentioned
       - ex: "list the contents of `dir`, copy everything from there to `dir2`"

@@ -4,11 +4,13 @@ from tok import CommandInputToken, ConjunctorToken
 from queue import Queue
 from collections import defaultdict
 
+import subprocess
+
 
 class Command:
     # (mostly) empty base class
     def exec(self):
-        return NotImplemented
+        return subprocess.run(str(self), shell=True, capture_output=True, text=True)
 
     def is_valid(self) -> bool:
         return NotImplemented
@@ -33,10 +35,7 @@ class ListCommand(Command):
         self._read_parse_tree(tree, defaultdict(set))
 
     def __str__(self) -> str:
-        return f'`ls {self.dir.content}`' if self.is_valid() else 'invalid command'
-
-    def exec(self):
-        pass
+        return f'ls {self.dir.content}' if self.is_valid() else 'invalid command'
 
     def is_valid(self) -> bool:
         return self.dir != None
@@ -132,10 +131,7 @@ class MoveCommand(Command):
         self._read_parse_tree(tree, defaultdict(set))
 
     def __str__(self) -> str:
-        return f'`mv {self.src_path.content} {self.dest_path.content}`' if self.is_valid() else 'invalid command'
-
-    def exec(self):
-        pass
+        return f'mv {self.src_path.content} {self.dest_path.content}' if self.is_valid() else 'invalid command'
 
     def is_valid(self) -> bool:
         return self.src_path != None and self.dest_path != None
@@ -194,10 +190,7 @@ class CopyCommand(Command):
         self._read_parse_tree(tree, defaultdict(set))
 
     def __str__(self) -> str:
-        return f'`cp {self.src_path.content} {self.dest_path.content}`' if self.is_valid() else 'invalid command'
-
-    def exec(self):
-        pass
+        return f'cp {self.src_path.content} {self.dest_path.content}' if self.is_valid() else 'invalid command'
 
     def is_valid(self) -> bool:
         return self.src_path != None and self.dest_path != None
@@ -248,10 +241,7 @@ class RemoveCommand(Command):
     def __str__(self) -> str:
         recursive = '-rf ' if self.is_recursive else ''
 
-        return f'`rm {recursive}{self.path.content}`' if self.is_valid() else 'invalid command'
-
-    def exec(self):
-        pass
+        return f'rm {recursive}{self.path.content}' if self.is_valid() else 'invalid command'
 
     def is_valid(self) -> bool:
         return self.path != None
@@ -322,10 +312,7 @@ class RawCommand(Command):
         self._read_parse_tree(tree, defaultdict(set))
 
     def __str__(self) -> str:
-        return repr(self.cmd) if self.is_valid() else 'invalid command'
-
-    def exec(self):
-        pass
+        return self.cmd.content if self.is_valid() else 'invalid command'
 
     def is_valid(self) -> bool:
         return self.cmd != None
@@ -358,9 +345,6 @@ class CommandGroup(Command):
 
     def __str__(self) -> str:
         return ' && '.join([str(cmd) for cmd in self.cmds])
-
-    def exec(self):
-        pass
 
     def is_valid(self) -> bool:
         return len(self.cmds) > 0
