@@ -442,13 +442,9 @@ class RemoveCommand(Command):
 
                 response = response.replace('[Verb]', word).replace('[InputVerb]', input_verb).replace('path', self.path.content)
             elif 'is a directory' in stderr:
-                response = "Sorry, I couldn't [Verb] `path` because it's a directory; did you mean to [Verb] it recursively?",
+                response = "Sorry, I couldn't [Verb] `path` because it's a directory; did you mean to [Verb] it recursively?"
 
-                input_verbs = ['delete', 'remove']
-
-                word = random.choice(words)
-                input_verb = random.choice(input_verbs)
-
+                input_verb = random.choice(['delete', 'remove'])
                 response = response.replace('[Verb]', input_verb).replace('path', self.path.content)
             else:
                 # generic error
