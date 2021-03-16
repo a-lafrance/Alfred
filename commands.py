@@ -98,16 +98,17 @@ class ListCommand(Command):
                 responses = [
                     "`dir` contains:",
                     "Inside `dir` is:",
-                    "I [Verb] the following in/inside `dir`:",
-                    "Here's what I found/saw/got:"
+                    "I [Verb] the following [Prep] `dir`:",
+                    "Here's what I [Verb]:"
                 ]
 
                 verbs = ['found', 'saw']
 
                 response = random.choice(responses)
                 verb = random.choice(verbs)
+                prep = random.choice(['in', 'inside'])
 
-                response = response.replace('[Verb]', verb).replace('dir', self.dir.content) + '\n' + stdout
+                response = response.replace('[Verb]', verb).replace('dir', self.dir.content).replace('[Prep]', prep) + '\n' + stdout
 
         return response
 

@@ -101,17 +101,17 @@ class Alfred:
 
     def serve(self):
         while True:
-            sentence = input('How can I help you?  ')
+            sentence = input('    How can I help you?  ')
+            print()
 
             if sentence.lower() in {'\q', 'quit', 'bye', 'goodbye', 'i want out'}:
                 print('Bye!')
-                return
+                break
 
             tree = self.grammar.parse(sentence)
 
             if tree != None:
                 cmd = Command.from_parse_tree(tree, self.context)
-                print()
 
                 if cmd != None:
                     print(cmd.exec())
@@ -120,7 +120,7 @@ class Alfred:
             else:
                 print(self.bad_grammar_error())
 
-            print()
+        print()
 
 
 if __name__ == '__main__':
