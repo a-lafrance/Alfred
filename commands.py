@@ -179,7 +179,6 @@ class ListCommand(Command):
         # if root is lexical, make sure word matches remaining lexicon
         else:
             if node.cat == 'Noun':
-                print(node.data, lexicon)
                 if type(node.data) == CommandInputToken:
                     self.dir = node.data
                 elif node.data == 'there':

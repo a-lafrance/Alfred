@@ -44,7 +44,7 @@ class Alfred:
             LexicalRule('Noun', 'contents', 0.25),
             LexicalRule('Noun', 'everything', 0.25),
             LexicalRule('Noun', CommandInputToken.placeholder(), 0.25),
-            LexicalRule('Pronoun', 'there', 0.25),
+            LexicalRule('Noun', 'there', 0.25),
 
             LexicalRule('Pronoun', 'me', 0.5),
             LexicalRule('Pronoun', 'what', 0.5),
