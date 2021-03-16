@@ -22,10 +22,11 @@ class LexicalRule:
 
 
 class ParseTreeNode:
-    def __init__(self, data: str, left: 'ParseTreeNode' = None, right: 'ParseTreeNode' = None):
+    def __init__(self, data: str, cat: str, left: 'ParseTreeNode' = None, right: 'ParseTreeNode' = None):
         self.left = left
         self.right = right
         self.data = data
+        self.cat = cat
 
     def __repr__(self) -> str:
         return self.traverse()
@@ -72,7 +73,7 @@ class Grammar:
             for x, y, p in self.lexical_rules():
                 if y == word:
                     probabilities[x, i, i] = p
-                    trees[x, i, i] = ParseTreeNode(word)
+                    trees[x, i, i] = ParseTreeNode(word, x)
 
         for i, j, k in self.subspans(l):
             for x, y, z, p in self.syntax_rules():
@@ -83,7 +84,7 @@ class Grammar:
 
                 if p_yz > probabilities[x, i, k]:
                     probabilities[x, i, k] = p_yz
-                    trees[x, i, k] = ParseTreeNode('', trees[y, i, j], trees[z, j + 1, k])
+                    trees[x, i, k] = ParseTreeNode('', x, trees[y, i, j], trees[z, j + 1, k])
 
         # print(trees)
         # print()

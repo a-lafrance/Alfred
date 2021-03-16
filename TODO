@@ -19,10 +19,14 @@ Output:
 
 step 1: fix cyk parse
 - literally make the grammar functional and the cyk parse implementation foolproof
+  - status: done
 - how to parse things that aren't words (like commas and commands)
+  - step 1: tokenization
+  - step 2: parsing tokens not words
 
 step 2: impl command input
 - make command classes and make them able to interpret a parse tree
+  - keep a running "remaining lexicon", slim it down at every node in the tree until you can fill out the command
 
 step 3: semantics
 - implement command execution
