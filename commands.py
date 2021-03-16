@@ -626,26 +626,3 @@ class CommandGroup(Command):
             return False
         else:
             return node.data in lexicon[node.cat]
-
-if __name__ == '__main__':
-    from main import grammar
-
-    sentence = 'execute `python main.py` then list the contents of `dir` and move `dir/file1` to `dir2/file1`'
-    tree = grammar.parse(sentence)
-    cmd = Command.from_parse_tree(tree)
-    print(sentence, '->', cmd)
-
-    # while True:
-    #     phrase = input('> ')
-    #     root = grammar.parse(phrase)
-    #
-    #     if phrase == '\q':
-    #         break
-    #
-    #     if tree != None:
-    #         cmd = MoveCommand(root)
-    #         print(cmd)
-    #     else:
-    #         print('no parse tree found')
-    #
-    # print('done')

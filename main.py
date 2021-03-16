@@ -2,6 +2,8 @@ from grammar import SyntaxRule, LexicalRule, Grammar
 from tok import WordToken, CommandInputToken, ConjunctorToken
 from commands import Command, Context
 
+import random
+
 
 class Alfred:
     def __init__(self):
@@ -74,6 +76,29 @@ class Alfred:
             LexicalRule('Conj', ConjunctorToken(), 1/3),
         ])
 
+
+    def bad_grammar_error(self) -> str:
+        responses = [
+            "I'm not sure what you said",
+            "I couldn't understand what you said",
+            "I didn't get that"
+        ]
+
+        return 'Sorry, ' + random.choice(responses)
+
+
+    def invalid_command_error(self) -> str:
+        responses = [
+            "I'm not sure what to do",
+            "I don't know how to do that",
+            "that's not a valid command"
+        ]
+
+        noun = random.choice(['what you said', 'that'])
+
+        return f'I understood {noun}, but ' + random.choice(responses)
+
+
     def serve(self):
         while True:
             sentence = input('How can I help you?  ')
@@ -86,17 +111,16 @@ class Alfred:
 
             if tree != None:
                 cmd = Command.from_parse_tree(tree, self.context)
+                print()
 
                 if cmd != None:
-                    print()
                     print(cmd.exec())
-                    print()
                 else:
-                    # TODO: better error msg
-                    print('invalid input')
+                    print(self.invalid_command_error())
             else:
-                # TODO: better error msg
-                print('no parse tree found')
+                print(self.bad_grammar_error())
+
+            print()
 
 
 if __name__ == '__main__':

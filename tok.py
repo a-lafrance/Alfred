@@ -115,15 +115,3 @@ def tokenize(sentence: str) -> 'list of tokens':
             tokens.append(token)
 
     return tokens
-
-if __name__ == '__main__':
-    while True:
-        sentence = input('> ')
-
-        if sentence == '\q':
-            break
-
-        tokens = tokenize(sentence)
-        print(tokens)
-
-    print('done')
