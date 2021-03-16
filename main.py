@@ -1,4 +1,5 @@
 from grammar import SyntaxRule, LexicalRule, Grammar
+from tok import WordToken, CommandInputToken, ConjunctorToken
 
 if __name__ == '__main__':
     syntax = [
@@ -25,40 +26,40 @@ if __name__ == '__main__':
     ]
 
     lexicon = [
-        LexicalRule('Preposition', 'to', 0.2),
-        LexicalRule('Preposition', 'inside', 0.2),
-        LexicalRule('Preposition', 'in', 0.2),
-        LexicalRule('Preposition', 'from', 0.2),
-        LexicalRule('Preposition', 'of', 0.2),
+        LexicalRule('Preposition', WordToken('to'), 0.2),
+        LexicalRule('Preposition', WordToken('inside'), 0.2),
+        LexicalRule('Preposition', WordToken('in'), 0.2),
+        LexicalRule('Preposition', WordToken('from'), 0.2),
+        LexicalRule('Preposition', WordToken('of'), 0.2),
 
-        LexicalRule('Article', 'the', 1),
+        LexicalRule('Article', WordToken('the'), 1),
 
-        LexicalRule('Noun', 'contents', 1/3),
-        LexicalRule('Noun', 'everything', 1/3),
-        LexicalRule('Noun', 'path', 1/3), # placeholder for testing without semantics
+        LexicalRule('Noun', WordToken('contents'), 1/3),
+        LexicalRule('Noun', WordToken('everything'), 1/3),
+        LexicalRule('Noun', CommandInputToken.placeholder(), 1/3),
 
-        LexicalRule('Pronoun', 'me', 0.5),
-        LexicalRule('Pronoun', 'what', 0.5),
+        LexicalRule('Pronoun', WordToken('me'), 0.5),
+        LexicalRule('Pronoun', WordToken('what'), 0.5),
 
-        LexicalRule('Adverb', 'recursively', 1),
+        LexicalRule('Adverb', WordToken('recursively'), 1),
 
-        LexicalRule('Verb', 'run', 1/17),
-        LexicalRule('Verb', 'execute', 1/17),
-        LexicalRule('Verb', 'do', 1/17),
-        LexicalRule('Verb', 'show', 1/17),
-        LexicalRule('Verb', 'list', 1/17),
-        LexicalRule('Verb', 'tell', 1/17),
-        LexicalRule('Verb', 'move', 1/17),
-        LexicalRule('Verb', 'rename', 1/17),
-        LexicalRule('Verb', 'place', 1/17),
-        LexicalRule('Verb', 'copy', 1/17),
-        LexicalRule('Verb', 'duplicate', 1/17),
-        LexicalRule('Verb', 'delete', 1/17),
-        LexicalRule('Verb', 'remove', 1/17),
-        LexicalRule('Verb', 'is', 1/17),
-        LexicalRule('Verb', 'put', 1/17),
-        LexicalRule('Verb', 'display', 1/17),
-        LexicalRule('Verb', 'find', 1/17),
+        LexicalRule('Verb', WordToken('run'), 1/17),
+        LexicalRule('Verb', WordToken('execute'), 1/17),
+        LexicalRule('Verb', WordToken('do'), 1/17),
+        LexicalRule('Verb', WordToken('show'), 1/17),
+        LexicalRule('Verb', WordToken('list'), 1/17),
+        LexicalRule('Verb', WordToken('tell'), 1/17),
+        LexicalRule('Verb', WordToken('move'), 1/17),
+        LexicalRule('Verb', WordToken('rename'), 1/17),
+        LexicalRule('Verb', WordToken('place'), 1/17),
+        LexicalRule('Verb', WordToken('copy'), 1/17),
+        LexicalRule('Verb', WordToken('duplicate'), 1/17),
+        LexicalRule('Verb', WordToken('delete'), 1/17),
+        LexicalRule('Verb', WordToken('remove'), 1/17),
+        LexicalRule('Verb', WordToken('is'), 1/17),
+        LexicalRule('Verb', WordToken('put'), 1/17),
+        LexicalRule('Verb', WordToken('display'), 1/17),
+        LexicalRule('Verb', WordToken('find'), 1/17),
     ]
 
     grammar = Grammar(syntax, lexicon)

@@ -22,11 +22,25 @@ step 1: fix cyk parse
   - status: done
 - how to parse things that aren't words (like commas and commands)
   - step 1: tokenization
+    - status: done
   - step 2: parsing tokens not words
+    - status: in progress
 
 step 2: impl command input
 - make command classes and make them able to interpret a parse tree
   - keep a running "remaining lexicon", slim it down at every node in the tree until you can fill out the command
+  - commands:
+    - ListCommand
+    - MoveCommand
+    - CopyCommand
+    - RemoveCommand
+    - CommandGroup
+  - bot also needs to remember context:
+    - the word "there" = last path mentioned
+      - ex: "list the contents of `dir`, copy everything from there to `dir2`"
+    - the word "that" = result of last command ("it" also counts) _or_ the last command executed
+      - ex1: "copy `dir` to `new dir` and move everything in it to `other dir`"
+      - ex2: "list everything in `dir`, copy everything in `dir2` to `dir`, then do it again" OR "do that again"
 
 step 3: semantics
 - implement command execution

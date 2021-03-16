@@ -1,4 +1,5 @@
 from collections import defaultdict
+from tok import Token, tokenize
 
 class SyntaxRule:
     def __init__(self, lhs: str, rhs1: str, rhs2: str, p: float):
@@ -12,7 +13,7 @@ class SyntaxRule:
 
 
 class LexicalRule:
-    def __init__(self, lhs: str, rhs: str, p: float):
+    def __init__(self, lhs: str, rhs: Token, p: float):
         self.lhs = lhs
         self.rhs = rhs
         self.p = p
@@ -22,7 +23,7 @@ class LexicalRule:
 
 
 class ParseTreeNode:
-    def __init__(self, data: str, cat: str, left: 'ParseTreeNode' = None, right: 'ParseTreeNode' = None):
+    def __init__(self, data: Token, cat: str, left: 'ParseTreeNode' = None, right: 'ParseTreeNode' = None):
         self.left = left
         self.right = right
         self.data = data
@@ -33,7 +34,7 @@ class ParseTreeNode:
 
     def traverse(self) -> str:
         if self.left == None and self.right == None:
-            return self.data
+            return repr(self.data)
         else:
             return f'{self.left.traverse()} {self.right.traverse()}'
 
@@ -58,37 +59,28 @@ class Grammar:
             yield rule.as_list()
 
     def parse(self, sentence: str) -> ParseTreeNode:
-        '''Implementation of CYK Parse to parse input sentences'''
+        '''Implementation of CYK Parse to parse (tokenized) input sentences'''
 
         # TODO: contraction expansion
-        # TODO: don't auto-lowercase commands
-        # TODO: tokenization
-        tokens = sentence.lower().split()
+        tokens = tokenize(sentence.lower())
         l = len(tokens)
 
         trees = {}
         probabilities = defaultdict(int)
 
-        for i, word in enumerate(tokens):
+        for i, tok in enumerate(tokens):
             for x, y, p in self.lexical_rules():
-                if y == word:
+                if y == tok:
                     probabilities[x, i, i] = p
-                    trees[x, i, i] = ParseTreeNode(word, x)
+                    trees[x, i, i] = ParseTreeNode(tok, x)
 
         for i, j, k in self.subspans(l):
             for x, y, z, p in self.syntax_rules():
                 p_yz = probabilities[y, i, j] * probabilities[z, j + 1, k] * p
 
-                # if i == 0 and k == l - 1:
-                #     print(x, y, z, p, trees)
-
                 if p_yz > probabilities[x, i, k]:
                     probabilities[x, i, k] = p_yz
-                    trees[x, i, k] = ParseTreeNode('', x, trees[y, i, j], trees[z, j + 1, k])
-
-        # print(trees)
-        # print()
-        # print()
+                    trees[x, i, k] = ParseTreeNode(None, x, trees[y, i, j], trees[z, j + 1, k])
 
         for data, tree in trees.items():
             x, i, j = data
@@ -108,6 +100,9 @@ class Grammar:
 
 
 if __name__ == '__main__':
+    from tok import WordToken, CommandInputToken, ConjunctorToken
+
+    # -- THIS IS NOT THE REAL GRAMMAR DO NOT USE IT
     syntax = [
         SyntaxRule('S', 'Imperative', 'NP', 1/7),
         SyntaxRule('S', 'NP', 'VP', 1/7),
@@ -134,36 +129,36 @@ if __name__ == '__main__':
     ]
 
     lexicon = [
-        LexicalRule('Preposition', 'to', 0.333),
-        LexicalRule('Preposition', 'inside', 0.333),
-        LexicalRule('Preposition', 'in', 0.333),
+        LexicalRule('Preposition', WordToken('to'), 0.333),
+        LexicalRule('Preposition', WordToken('inside'), 0.333),
+        LexicalRule('Preposition', WordToken('in'), 0.333),
 
-        LexicalRule('Article', 'the', 1),
+        LexicalRule('Article', WordToken('the'), 1),
 
-        LexicalRule('Noun', 'contents', 0.333),
-        LexicalRule('Noun', 'everything', 0.333),
-        LexicalRule('Noun', 'dir', 0.333), # placeholder for testing without semantics
+        LexicalRule('Noun', WordToken('contents'), 0.333),
+        LexicalRule('Noun', WordToken('everything'), 0.333),
+        LexicalRule('Noun', CommandInputToken.placeholder(), 0.333), # placeholder for testing without semantics
 
-        LexicalRule('Pronoun', 'me', 0.5),
-        LexicalRule('Pronoun', 'what', 0.5),
+        LexicalRule('Pronoun', WordToken('me'), 0.5),
+        LexicalRule('Pronoun', WordToken('what'), 0.5),
 
-        LexicalRule('Adverb', 'recursively', 1),
+        LexicalRule('Adverb', WordToken('recursively'), 1),
 
-        LexicalRule('Verb', 'run', 1/15),
-        LexicalRule('Verb', 'execute', 1/15),
-        LexicalRule('Verb', 'do', 1/15),
-        LexicalRule('Verb', 'show', 1/15),
-        LexicalRule('Verb', 'list', 1/15),
-        LexicalRule('Verb', 'tell', 1/15),
-        LexicalRule('Verb', 'move', 1/15),
-        LexicalRule('Verb', 'rename', 1/15),
-        LexicalRule('Verb', 'place', 1/15),
-        LexicalRule('Verb', 'copy', 1/15),
-        LexicalRule('Verb', 'duplicate', 1/15),
-        LexicalRule('Verb', 'delete', 1/15),
-        LexicalRule('Verb', 'remove', 1/15),
-        LexicalRule('Verb', 'is', 1/15),
-        LexicalRule('Verb', 'put', 1/15),
+        LexicalRule('Verb', WordToken('run'), 1/15),
+        LexicalRule('Verb', WordToken('execute'), 1/15),
+        LexicalRule('Verb', WordToken('do'), 1/15),
+        LexicalRule('Verb', WordToken('show'), 1/15),
+        LexicalRule('Verb', WordToken('list'), 1/15),
+        LexicalRule('Verb', WordToken('tell'), 1/15),
+        LexicalRule('Verb', WordToken('move'), 1/15),
+        LexicalRule('Verb', WordToken('rename'), 1/15),
+        LexicalRule('Verb', WordToken('place'), 1/15),
+        LexicalRule('Verb', WordToken('copy'), 1/15),
+        LexicalRule('Verb', WordToken('duplicate'), 1/15),
+        LexicalRule('Verb', WordToken('delete'), 1/15),
+        LexicalRule('Verb', WordToken('remove'), 1/15),
+        LexicalRule('Verb', WordToken('is'), 1/15),
+        LexicalRule('Verb', WordToken('put'), 1/15),
     ]
 
     grammar = Grammar(syntax, lexicon)

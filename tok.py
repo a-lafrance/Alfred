@@ -2,29 +2,56 @@
     # word
     # command input
     # conjunctor (comma)
-    # end of sentence (period, optional)
+    # end of sentence (period, optional & ignored)
 
-class WordToken:
+class Token: # empty base class
+    pass
+
+class WordToken(Token):
     def __init__(self, word: str):
         self.word = word
 
     def __repr__(self) -> str:
         return f'"{self.word}"'
 
-class CommandInputToken:
+    def __eq__(self, tok: 'any') -> bool:
+        if type(tok) == WordToken:
+            return self.word == tok.word
+        elif isinstance(tok, Token):
+            return False
+        else:
+            return NotImplemented
+
+class CommandInputToken(Token):
     def __init__(self, content: str):
         self.content = content
 
     def __repr__(self) -> str:
         return f'`{self.content}`'
 
-class ConjunctorToken:
+    def __eq__(self, tok: 'any') -> bool:
+        if type(tok) == CommandInputToken:
+            # "catch-all" cmd input when content is None
+            return self.content == tok.content if self.content != None else True
+        elif isinstance(tok, Token):
+            return False
+        else:
+            return NotImplemented
+
+    def placeholder() -> 'CommandInputToken':
+        return CommandInputToken(None)
+
+class ConjunctorToken(Token):
     def __repr__(self) -> str:
         return f','
 
-class EndOfSentenceToken:
-    def __repr__(self) -> str:
-        return f'.'
+    def __eq__(self, tok: 'any') -> bool:
+        if type(tok) == WordToken:
+            return tok.word == 'and'
+        elif isinstance(tok, Token):
+            return type(tok) == ConjunctorToken
+        else:
+            return NotImplemented
 
 def tokenize(sentence: str) -> 'list of tokens':
     tokens = []
@@ -57,11 +84,10 @@ def tokenize(sentence: str) -> 'list of tokens':
             # conjunctor
             tokens.append(ConjunctorToken())
             i += 1
-        elif c == '.':
-            # end of sentence
-            tokens.append(EndOfSentenceToken())
+        elif c in {'.', ' '}:
+            # basically ignore periods and spaces
             i += 1
-        elif c != ' ':
+        else:
             # word
             word = ''
 
@@ -76,8 +102,6 @@ def tokenize(sentence: str) -> 'list of tokens':
 
             token = WordToken(word)
             tokens.append(token)
-        else:
-            i += 1
 
     return tokens
 
