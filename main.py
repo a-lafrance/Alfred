@@ -77,18 +77,19 @@ if __name__ == '__main__':
     while True:
         sentence = input('> ')
 
-        if sentence == '\q':
+        if sentence.lower() in {'\q', 'quit', 'bye', 'goodbye', 'i want out'}:
+            print('Bye!')
             break
 
         tree = grammar.parse(sentence)
 
         if tree != None:
             cmd = Command.from_parse_tree(tree)
-            print(cmd.exec().stdout)
+            print()
+            print(cmd.exec())
         else:
+            # TODO: better error msg
             print('no parse tree found')
-
-    print('done')
 
 
 

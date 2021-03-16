@@ -47,6 +47,8 @@ step 2: impl command input
 
 step 3: semantics
 - implement command execution (see `subprocess` module)
+  - status: DONE
+- TODO: set up some kind of test env to actually test semantics fully
 
 step 4: output
 - figure out how to sample from a grammar (or just hard code stuff idk)
@@ -60,6 +62,25 @@ step 5: refine
 
 KNOWN ISSUES:
 - double conjunction doesn't work (like comma + conjunction word)
-- there are literally 0 unit tests
 - backticks in command input aren't handled
-- commands could each contribute their own lexicons (to make command input less abhorrent)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OUTPUT GRAMMAR:
+
+S -> Noun Verb | PP Verb

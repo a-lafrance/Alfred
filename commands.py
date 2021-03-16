@@ -1,15 +1,16 @@
-from grammar import ParseTreeNode
+from grammar import ParseTreeNode, Grammar, SyntaxRule, LexicalRule
 from tok import CommandInputToken, ConjunctorToken
 
 from queue import Queue
 from collections import defaultdict
 
 import subprocess
+import random
 
 
 class Command:
     # (mostly) empty base class
-    def exec(self):
+    def exec(self) -> subprocess.CompletedProcess:
         return subprocess.run(str(self), shell=True, capture_output=True, text=True)
 
     def is_valid(self) -> bool:
@@ -39,6 +40,56 @@ class ListCommand(Command):
 
     def is_valid(self) -> bool:
         return self.dir != None
+
+    def exec(self) -> str:
+        result = Command.exec(self)
+
+        # first, check for error
+        if result.returncode != 0: # assumed to be error
+            stderr = result.stderr
+
+            if 'No such file or directory' in stderr: # yes, this could technically be broken, but it'll do for now
+                responses = [
+                    "I couldn't [Verb] `dir`",
+                    "`dir` doesn't seem to exist"
+                ]
+
+                words = ['find', 'locate', 'see']
+
+                response = random.choice(responses)
+                word = random.choice(words)
+
+                response = response.replace('[Verb]', word).replace('dir', self.dir.content)
+            else:
+                # generic error
+                response = 'an error occurred'
+        else:
+            stdout = result.stdout
+
+            if stdout == '': # assume directory is empty
+                responses = [
+                    "`dir` seems to be empty",
+                    "`dir` doesn't have anything inside it",
+                    "There's nothing inside `dir`"
+                ]
+
+                response = random.choice(responses)
+            else:
+                responses = [
+                    "`dir` contains:",
+                    "Inside `dir` is:",
+                    "I [Verb] the following in/inside `dir`:",
+                    "Here's what I found/saw/got:"
+                ]
+
+                verbs = ['found', 'saw']
+
+                response = random.choice(responses)
+                verb = random.choice(verbs)
+
+                response = response.replace('[Verb]', verb).replace('dir', self.dir.content) + '\n' + stdout
+
+        return response
 
     def _read_parse_tree(self, node: ParseTreeNode, lexicon: {str : set}) -> bool:
         # if root is syntactic, parse children recursively with remaining lexicon
@@ -127,17 +178,62 @@ class MoveCommand(Command):
         self.src_path = None
         self.dest_path = None
         self.is_glob = False
+        self.request = None
 
         self._read_parse_tree(tree, defaultdict(set))
 
     def __str__(self) -> str:
-        return f'mv {self.src_path.content} {self.dest_path.content}' if self.is_valid() else 'invalid command'
+        glob = '/*' if self.is_glob else ''
+
+        return f'mv {self.src_path.content}{glob} {self.dest_path.content}' if self.is_valid() else 'invalid command'
 
     def is_valid(self) -> bool:
         return self.src_path != None and self.dest_path != None
 
+    def exec(self) -> str:
+        result = Command.exec(self)
+
+        # first, check for error
+        if result.returncode != 0: # assumed to be error
+            stderr = result.stderr
+
+            if 'No such file or directory' in stderr: # yes, this could technically be broken, but it'll do for now
+                responses = [
+                    "Sorry, I couldn't [Verb] `src`",
+                    "`src` doesn't seem to exist, so I couldn't [InputVerb] it"
+                ]
+
+                words = ['find', 'locate', 'see']
+
+                response = random.choice(responses)
+                word = random.choice(words)
+
+                response = response.replace('[Verb]', word).replace('[InputVerb]', self.request).replace('src', self.src_path.content)
+            else:
+                # generic error
+                response = 'an error occurred'
+        else:
+            stdout = result.stdout
+
+            if self.is_glob:
+                responses = [
+                    'Everything in `src` has been moved to `dest`',
+                    "I moved everything in `src` to `dest`"
+                ]
+            else:
+                responses = [
+                    "`src` is now located at `dest`",
+                    "I've successfully [InputVerbPast] `src` to `dest`",
+                ]
+
+            response = random.choice(responses)
+            verb = self.request + 'd'
+
+            response = response.replace('[InputVerbPast]', verb).replace('`src`', f'`{self.src_path.content}`').replace('`dest`', f'`{self.dest_path.content}`')
+
+        return response
+
     def _read_parse_tree(self, node: ParseTreeNode, lexicon: {str : set}) -> bool:
-        # print(node.cat, node.data)
         if node.data == None:
             if node.cat == 'S':
                 if node.left != None and node.right != None:
@@ -178,6 +274,8 @@ class MoveCommand(Command):
                 if node.data != 'move' and 'everything' in lexicon['Noun']:
                     lexicon['Noun'].remove('everything')
 
+                self.request = node.data.word
+
             return node.data in lexicon[node.cat]
 
 class CopyCommand(Command):
@@ -185,7 +283,6 @@ class CopyCommand(Command):
         # defaults before reading parse
         self.src_path = None
         self.dest_path = None
-        self.is_glob = False
 
         self._read_parse_tree(tree, defaultdict(set))
 
@@ -195,17 +292,55 @@ class CopyCommand(Command):
     def is_valid(self) -> bool:
         return self.src_path != None and self.dest_path != None
 
+    def exec(self) -> str:
+        result = Command.exec(self)
+
+        # first, check for error
+        if result.returncode != 0: # assumed to be error
+            stderr = result.stderr
+
+            if 'No such file or directory' in stderr: # yes, this could technically be broken, but it'll do for now
+                responses = [
+                    "Sorry, I couldn't [Verb] `src`",
+                    "`src` doesn't seem to exist, so I couldn't [InputVerb] it"
+                ]
+
+                words = ['find', 'locate', 'see']
+                input_verbs = ['copy', 'duplicate']
+
+                response = random.choice(responses)
+                word = random.choice(words)
+                input_verb = random.choice(input_verbs)
+
+                response = response.replace('[Verb]', word).replace('[InputVerb]', input_verb).replace('src', self.src_path.content)
+            else:
+                # generic error
+                response = 'an error occurred'
+        else:
+            stdout = result.stdout
+
+            responses = [
+                "`src` has been [VerbPast] to `dest`",
+                "I've successfully [VerbPast] `src` to `dest`",
+            ]
+
+            response = random.choice(responses)
+            verb = random.choice(['copied', 'duplicated'])
+
+            response = response.replace('[VerbPast]', verb).replace('`src`', f'`{self.src_path.content}`').replace('`dest`', f'`{self.dest_path.content}`')
+
+        return response
+
     def _read_parse_tree(self, node: ParseTreeNode, lexicon: {str : set}) -> bool:
         if node.data == None:
             if node.cat == 'S':
                 if node.left != None and node.right != None:
-                    # print(node.left.cat, node.right.cat)
                     if node.left.cat == 'Verb' and node.right.cat == 'NP':
                         # this is the only possible syntax -- lexicon varies
                         full_lexicon = defaultdict(set, {
                             'Verb' : {'copy', 'duplicate'},
-                            'Noun' : {'everything', CommandInputToken.placeholder()},
-                            'Preposition' : {'to', 'in', 'inside', 'from'},
+                            'Noun' : {CommandInputToken.placeholder()},
+                            'Preposition' : {'to'},
                         })
 
                         return self._read_parse_tree(node.left, full_lexicon) and self._read_parse_tree(node.right, full_lexicon)
@@ -225,8 +360,6 @@ class CopyCommand(Command):
                         self.src_path = node.data
                     else:
                         self.dest_path = node.data
-                elif node.data == 'everything':
-                    self.is_glob = True
 
             return node.data in lexicon[node.cat]
 
@@ -245,6 +378,64 @@ class RemoveCommand(Command):
 
     def is_valid(self) -> bool:
         return self.path != None
+
+    def exec(self) -> str:
+        result = Command.exec(self)
+
+        # first, check for error
+        if result.returncode != 0: # assumed to be error
+            stderr = result.stderr
+
+            if 'No such file or directory' in stderr: # yes, this could technically be broken, but it'll do for now
+                responses = [
+                    "Sorry, I couldn't [Verb] `path`",
+                    "`path` doesn't seem to exist, so I couldn't [InputVerb] it"
+                ]
+
+                words = ['find', 'locate', 'see']
+                input_verbs = ['delete', 'remove']
+
+                response = random.choice(responses)
+                word = random.choice(words)
+                input_verb = random.choice(input_verbs)
+
+                response = response.replace('[Verb]', word).replace('[InputVerb]', input_verb).replace('path', self.path.content)
+            elif 'is a directory' in stderr:
+                response = "Sorry, I couldn't [Verb] `path` because it's a directory; did you mean to [Verb] it recursively?",
+
+                input_verbs = ['delete', 'remove']
+
+                word = random.choice(words)
+                input_verb = random.choice(input_verbs)
+
+                response = response.replace('[Verb]', input_verb).replace('path', self.path.content)
+            else:
+                # generic error
+                response = 'an error occurred'
+        else:
+            stdout = result.stdout
+
+            responses = [
+                "I've successfully [VerbPast] [Everything] `path` [Recursive]",
+                "`path` has been [VerbPast] [Recursive]",
+            ]
+
+            if self.is_recursive:
+                everything = random.choice(['', 'everything in'])
+                recursive = random.choice(['', 'recursively'])
+            else:
+                everything = recursive = ''
+
+            response = random.choice(responses)
+            verb = random.choice(['deleted', 'removed'])
+
+            response = response \
+                .replace('[VerbPast]', verb) \
+                .replace('[Everything]', everything) \
+                .replace('[Recursive]', recursive) \
+                .replace('`path`', f'`{self.path.content}`')
+
+        return response
 
     def _read_parse_tree(self, node: ParseTreeNode, lexicon: {str : set}) -> bool:
         if node.data == None:
@@ -317,6 +508,24 @@ class RawCommand(Command):
     def is_valid(self) -> bool:
         return self.cmd != None
 
+    def exec(self) -> str:
+        result = Command.exec(self)
+
+        # first, check for error
+        if result.returncode != 0: # assumed to be error
+            response = 'something went wrong' # generic error
+        else:
+            stdout = result.stdout
+
+            if stdout == '':
+                response = 'I did it; nothing happened, but it was successful.'
+            else:
+                response = "Done; here's [Content]:" + '\n' + stdout
+
+            content = random.choice(['what happened', 'what I got back', 'the results'])
+
+        return response.replace('[Content]', content)
+
     def _read_parse_tree(self, node: ParseTreeNode, lexicon: {str : set}) -> bool:
         if node.data == None:
             if node.left != None and node.right != None:
@@ -348,6 +557,9 @@ class CommandGroup(Command):
 
     def is_valid(self) -> bool:
         return len(self.cmds) > 0
+
+    def exec(self) -> str:
+        return '\n'.join([cmd.exec() for cmd in self.cmds])
 
     def _read_parse_tree(self, node: ParseTreeNode, lexicon: {str : set}) -> bool:
         # print(node.cat, node.traverse())

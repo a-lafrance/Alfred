@@ -95,8 +95,8 @@ def tokenize(sentence: str) -> 'list of tokens':
             # conjunctor
             tokens.append(ConjunctorToken())
             i += 1
-        elif c in {'.', ' '}:
-            # basically ignore periods and spaces
+        elif c in {'.', ' ', '?'}:
+            # basically ignore appropriate end-of-sentence indicators and spaces
             i += 1
         else:
             # word
