@@ -9,12 +9,23 @@ import random
 
 
 class Command:
-    # (mostly) empty base class
+    # base class for all commands
     def exec(self) -> subprocess.CompletedProcess:
         return subprocess.run(str(self), shell=True, capture_output=True, text=True)
 
     def is_valid(self) -> bool:
         return NotImplemented
+
+    def general_error_message(self) -> str:
+        responses = [
+            "Something [Verb], but I'm not sure what happened",
+            'Unfortunately that command failed for an unknown reason',
+            "I couldn't quite figure out why that [Verb]"
+        ]
+
+        verb = random.choice(['failed', 'went wrong', 'crashed', "didn't work"])
+
+        return random.choice(responses).replace('[Verb]', verb)
 
     def from_parse_tree(tree: ParseTreeNode, include_group=True) -> 'Command':
         cmd_types = [ListCommand, MoveCommand, CopyCommand, RemoveCommand, RawCommand, CommandGroup]
@@ -62,7 +73,7 @@ class ListCommand(Command):
                 response = response.replace('[Verb]', word).replace('dir', self.dir.content)
             else:
                 # generic error
-                response = 'an error occurred'
+                response = self.general_error_message()
         else:
             stdout = result.stdout
 
@@ -211,7 +222,7 @@ class MoveCommand(Command):
                 response = response.replace('[Verb]', word).replace('[InputVerb]', self.request).replace('src', self.src_path.content)
             else:
                 # generic error
-                response = 'an error occurred'
+                response = self.general_error_message()
         else:
             stdout = result.stdout
 
@@ -315,7 +326,7 @@ class CopyCommand(Command):
                 response = response.replace('[Verb]', word).replace('[InputVerb]', input_verb).replace('src', self.src_path.content)
             else:
                 # generic error
-                response = 'an error occurred'
+                response = self.general_error_message()
         else:
             stdout = result.stdout
 
@@ -411,7 +422,7 @@ class RemoveCommand(Command):
                 response = response.replace('[Verb]', input_verb).replace('path', self.path.content)
             else:
                 # generic error
-                response = 'an error occurred'
+                response = self.general_error_message()
         else:
             stdout = result.stdout
 
@@ -513,7 +524,7 @@ class RawCommand(Command):
 
         # first, check for error
         if result.returncode != 0: # assumed to be error
-            response = 'something went wrong' # generic error
+            response = self.general_error_message()
         else:
             stdout = result.stdout
 

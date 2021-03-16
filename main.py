@@ -75,7 +75,7 @@ if __name__ == '__main__':
     # TODO: put grammar back here
 
     while True:
-        sentence = input('> ')
+        sentence = input('How can I help you?  ')
 
         if sentence.lower() in {'\q', 'quit', 'bye', 'goodbye', 'i want out'}:
             print('Bye!')

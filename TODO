@@ -51,8 +51,11 @@ step 3: semantics
 - TODO: set up some kind of test env to actually test semantics fully
 
 step 4: output
-- figure out how to sample from a grammar (or just hard code stuff idk)
+- figure out some way to output stuff
+  - status: mostly done
+- generic error output
 - print to user
+  - status: done
 
 step 5: refine
 - add extras
@@ -63,6 +66,7 @@ step 5: refine
 KNOWN ISSUES:
 - double conjunction doesn't work (like comma + conjunction word)
 - backticks in command input aren't handled
+- invalid command gives infinite recursion
 
 
 
