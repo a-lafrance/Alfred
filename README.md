@@ -1,5 +1,5 @@
 # Alfred
-A natural language terminal interface
+A natural language terminal interface, made for UCI CS 171
 
 # Overview
 
